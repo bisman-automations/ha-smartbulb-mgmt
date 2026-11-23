@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configure Smart Bulb Management",
+        "description": "Link a Leviton switch or dimmer (with Smart Bulb Mode enabled) to smart bulbs without interfering with ha-holiday-lighting.",
+        "data": {
+          "switch_entity": "Leviton Switch or Dimmer",
+          "bulb_entities": "Target Smart Bulbs",
+          "holiday_entity": "Holiday Lighting Status Entity (e.g. sensor.holiday_lighting_status)",
+          "holiday_control_entity": "Holiday Lighting Switch/Boolean to pause on Off (optional)",
+          "pause_holiday_on_off": "Turn off Holiday Lighting control entity when switch turns Off",
+          "two_way_sync": "Two-way sync (bulbs update switch state passively)",
+          "sync_brightness": "Mirror dimmer brightness to bulbs",
+          "override_holiday": "Override holiday lighting when switch turns On",
+          "color_mode": "Default color mode when switch turns On (if holiday lighting is not On)",
+          "rgb_color": "Default RGB Color",
+          "color_temp_kelvin": "Default Color Temperature (Kelvin)",
+          "default_brightness_pct": "Default Brightness (%)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This switch is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Update Smart Bulb Management",
+        "data": {
+          "bulb_entities": "Target Smart Bulbs",
+          "holiday_entity": "Holiday Lighting Status Entity (e.g. sensor.holiday_lighting_status)",
+          "holiday_control_entity": "Holiday Lighting Switch/Boolean to pause on Off (optional)",
+          "pause_holiday_on_off": "Turn off Holiday Lighting control entity when switch turns Off",
+          "two_way_sync": "Two-way sync (bulbs update switch state passively)",
+          "sync_brightness": "Mirror dimmer brightness to bulbs",
+          "override_holiday": "Override holiday lighting when switch turns On",
+          "color_mode": "Default color mode when switch turns On (if holiday lighting is not On)",
+          "rgb_color": "Default RGB Color",
+          "color_temp_kelvin": "Default Color Temperature (Kelvin)",
+          "default_brightness_pct": "Default Brightness (%)"
+        }
+      }
+    }
+  }
+}

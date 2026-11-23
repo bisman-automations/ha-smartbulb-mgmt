@@ -1,0 +1,10 @@
+{
+  "domain": "smartbulb_mgmt",
+  "name": "Smart Bulb Management",
+  "codeowners": ["@bisman-automations"],
+  "config_flow": true,
+  "documentation": "https://github.com/bisman-automations/ha-smartbulb-mgmt",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/bisman-automations/ha-smartbulb-mgmt/issues",
+  "version": "0.1.0"
+}
