@@ -18,10 +18,18 @@
           "color_temp_kelvin": "Default Color Temperature (Kelvin)",
           "default_brightness_pct": "Default Brightness (%)"
         }
+      },
+      "reconfigure": {
+        "title": "Change the switch or dimmer",
+        "description": "Choose the switch or dimmer (in Smart Bulb Mode) that controls these bulbs. The bulbs and other settings stay the same.",
+        "data": {
+          "switch_entity": "Switch or dimmer"
+        }
       }
     },
     "abort": {
-      "already_configured": "This switch is already configured."
+      "already_configured": "This switch is already configured.",
+      "reconfigure_successful": "The switch was changed."
     }
   },
   "options": {
@@ -42,6 +50,16 @@
           "default_brightness_pct": "Default Brightness (%)"
         }
       }
+    }
+  },
+  "issues": {
+    "switch_missing": {
+      "title": "{title}: switch no longer exists",
+      "description": "Smart Bulb Management can't find the switch or dimmer `{entity}` for **{title}**, so the bulbs won't follow it. It may have been deleted or renamed.\n\nGo to **Settings > Devices & services > Smart Bulb Management**, open **{title}**, and choose **Reconfigure** to pick the switch again. This message goes away once the switch is back."
+    },
+    "bulbs_missing": {
+      "title": "{title}: bulbs no longer exist",
+      "description": "Smart Bulb Management can't find these bulbs for **{title}**: {entities}. They may have been deleted or renamed.\n\nGo to **Settings > Devices & services > Smart Bulb Management**, open **{title}**, choose **Configure**, and update **Target Smart Bulbs**. This message goes away once the bulbs are back or removed from the list."
     }
   }
 }

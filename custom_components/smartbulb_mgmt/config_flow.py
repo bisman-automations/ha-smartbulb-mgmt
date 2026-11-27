@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 from typing import Any
+
 import voluptuous as vol
 
 from homeassistant import config_entries
+from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.core import callback
-from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.selector import (
     BooleanSelector,
     ColorRGBSelector,
@@ -64,16 +65,16 @@ class SmartBulbMgmtConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Handle the initial step."""
         if user_input is not None:
             switch_entity = user_input[CONF_SWITCH_ENTITY]
             await self.async_set_unique_id(switch_entity)
             self._abort_if_unique_id_configured()
 
-            state = self.hass.states.get(switch_entity)
-            title = state.name if state and state.name else switch_entity
-            return self.async_create_entry(title=title, data=user_input)
+            return self.async_create_entry(
+                title=self._switch_name(switch_entity), data=user_input
+            )
 
         holiday_default = (
             DEFAULT_HOLIDAY_ENTITY
@@ -129,7 +130,9 @@ class SmartBulbMgmtConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         mode=SelectSelectorMode.DROPDOWN,
                     )
                 ),
-                vol.Optional(CONF_RGB_COLOR, default=[255, 255, 255]): ColorRGBSelector(),
+                vol.Optional(
+                    CONF_RGB_COLOR, default=[255, 255, 255]
+                ): ColorRGBSelector(),
                 vol.Optional(
                     CONF_COLOR_TEMP_KELVIN, default=DEFAULT_COLOR_TEMP_KELVIN
                 ): ColorTempSelector(
@@ -147,6 +150,49 @@ class SmartBulbMgmtConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(step_id="user", data_schema=vol.Schema(fields))
 
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Point an existing entry at a different switch or dimmer."""
+        entry = self._get_reconfigure_entry()
+        current = entry.data[CONF_SWITCH_ENTITY]
+
+        if user_input is not None:
+            switch_entity = user_input[CONF_SWITCH_ENTITY]
+            if switch_entity != current and any(
+                other.unique_id == switch_entity
+                for other in self._async_current_entries(include_ignore=False)
+                if other.entry_id != entry.entry_id
+            ):
+                return self.async_abort(reason="already_configured")
+
+            # Keep a title the user chose; follow the switch when it's the default.
+            title = entry.title
+            if title in (current, self._switch_name(current)):
+                title = self._switch_name(switch_entity)
+            return self.async_update_reload_and_abort(
+                entry,
+                unique_id=switch_entity,
+                title=title,
+                data_updates={CONF_SWITCH_ENTITY: switch_entity},
+            )
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_SWITCH_ENTITY, default=current): EntitySelector(
+                        EntitySelectorConfig(domain=["switch", "light"])
+                    ),
+                }
+            ),
+        )
+
+    def _switch_name(self, entity_id: str) -> str:
+        """Return the switch's friendly name, or its entity ID if it has none."""
+        state = self.hass.states.get(entity_id)
+        return state.name if state and state.name else entity_id
+
     @staticmethod
     @callback
     def async_get_options_flow(
@@ -161,7 +207,7 @@ class SmartBulbMgmtOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Manage the options."""
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
@@ -219,7 +265,9 @@ class SmartBulbMgmtOptionsFlow(config_entries.OptionsFlow):
                 ): BooleanSelector(),
                 vol.Optional(
                     CONF_OVERRIDE_HOLIDAY,
-                    default=current.get(CONF_OVERRIDE_HOLIDAY, DEFAULT_OVERRIDE_HOLIDAY),
+                    default=current.get(
+                        CONF_OVERRIDE_HOLIDAY, DEFAULT_OVERRIDE_HOLIDAY
+                    ),
                 ): BooleanSelector(),
                 vol.Optional(
                     CONF_COLOR_MODE,

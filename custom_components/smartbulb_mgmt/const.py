@@ -27,4 +27,9 @@ DEFAULT_OVERRIDE_HOLIDAY = False
 DEFAULT_COLOR_MODE = COLOR_MODE_NONE
 DEFAULT_COLOR_TEMP_KELVIN = 2700
 DEFAULT_BRIGHTNESS_PCT = 100
+# Backstop for bulbs that report back without our context. Our own calls are
+# recognised by their tracked Context first.
 SYNC_COOLDOWN_SECONDS = 1.5
+
+ISSUE_SWITCH_MISSING = "switch_missing"
+ISSUE_BULBS_MISSING = "bulbs_missing"
